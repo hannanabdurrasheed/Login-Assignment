@@ -145,7 +145,7 @@ async function login() {
         message.innerHTML = "Please fill in all fields.";
         return;
     }
-
+// Validate login inputs before sending the request
     const gmailPattern = /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
 
     if (!gmailPattern.test(email)) {
