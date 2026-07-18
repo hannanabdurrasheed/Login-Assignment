@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff0f5, #ffd6e7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 380px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.25);
+            text-align: center;
+        }
+
+        h2 {
+            color: #e91e63;
+            margin-bottom: 25px;
+            font-size: 30px;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 2px solid #f8bbd0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #e91e63;
+            box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #c2185b;
+            transform: translateY(-2px);
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .link {
+            margin-top: 20px;
+        }
+
+        .link a {
+            color: #e91e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="icon">🔐</div>
+
+    <h2>Login</h2>
+
+    <input
+        type="email"
+        id="email"
+        placeholder="📧 Enter your Gmail address">
+
+    <input
+        type="password"
+        id="password"
+        placeholder="🔒 Enter your password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="msg"></p>
+
+    <div class="link">
+        Don't have an account?
+        <a href="register.html">Register Here</a>
+    </div>
+</div>
+
+<script>
+async function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("msg");
+
+    message.className = "";
+    message.innerHTML = "";
+
+    if (email === "" || password === "") {
+        message.className = "error";
+        message.innerHTML = "Please fill in all fields.";
+        return;
+    }
+
+    const gmailPattern = /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+
+    if (!gmailPattern.test(email)) {
+        message.className = "error";
+        message.innerHTML = "Please enter a valid Gmail address.";
+        return;
+    }
+
+    if (password.length < 8) {
+        message.className = "error";
+        message.innerHTML = "Password must be at least 8 characters.";
+        return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+        message.className = "error";
+        message.innerHTML =
+            "Password must contain at least one uppercase letter.";
+        return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+        message.className = "error";
+        message.innerHTML =
+            "Password must contain at least one lowercase letter.";
+        return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+        message.className = "error";
+        message.innerHTML =
+            "Password must contain at least one number.";
+        return;
+    }
+
+    if (!/[@$!%*?&#]/.test(password)) {
+        message.className = "error";
+        message.innerHTML =
+            "Password must contain at least one special character.";
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "http://localhost:3000/api/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            message.className = "success";
+            message.innerHTML = data.message;
+        } else {
+            message.className = "error";
+            message.innerHTML = data.message;
+        }
+    } catch (error) {
+        message.className = "error";
+        message.innerHTML = "Unable to connect to the server.";
+    }
+}
+</script>
+
+</body>
+</html>
